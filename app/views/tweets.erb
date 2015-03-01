@@ -1,24 +1,16 @@
-<!doctype html>
-<html>
-  <head>
-    <title>Project Fwitter</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-  </head>
-  <body> 
-    <div class="container">
-      <h1>Fwitter Accounts:</h1>
-      <% @tweets.each do |tweet|%>
-        <h1><%=tweet.user%> - <%= tweet.message %></h1>
 
+
+      <h3>Fweets:</h3>
+      <% @tweets.each do |tweet|%>
+        <p><strong><%=tweet.user.username %></strong> - <%= tweet.message %></p>
       <% end %>
 
+
+      <h3>Add A Fweet:</h3>
       <form action="/tweets" method="POST">
-        User: <input type="text" name="user">
-        Message: <input type="text" name="message">
-        <input type="submit">
+        <input type="hidden" name="user_id" value= <%= session[:user_id] %> >
+
+        Message: <input class="form-control" type="text" name="message">
+        <input type="submit" class="btn btn-default">
       </form>
-    
-    </div>
-  </body>
-</html>
+ 

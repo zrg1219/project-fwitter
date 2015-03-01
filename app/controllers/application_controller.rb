@@ -1,5 +1,6 @@
 require './config/environment'
 require './app/models/tweet'
+require './app/models/user'
 require 'pry'
 
 class ApplicationController < Sinatra::Base
@@ -7,23 +8,50 @@ class ApplicationController < Sinatra::Base
   configure do
     set :public_folder, 'public'
     set :views, 'app/views'
+    enable :sessions
+    set :session_secret, "fwitter"
   end
 
   get '/' do
-    # tweet1 = Tweet.new("Zoe", "Hello")
-    # tweet2 = Tweet.new("Sarah", "Hola")
-    # tweet3 = Tweet.new("Corey", "Shalom")
-    @tweets = Tweet.all_messages
+    @tweets = Tweet.all
+    @users = User.all
     erb :tweets
   end
 
   post '/tweets' do
-    # puts params
-    # binding.pry
-    new_tweet = Tweet.new(params[:user],params[:message])
+    new_tweet = Tweet.new(:user_id => params[:user_id], :message => params[:message])
+    new_tweet.save
     redirect ('/')
   end
 
+  get '/login' do
+    erb :login
+  end
 
+  post '/login' do
+    @user = User.find_by(:username => params[:username], :email => params[:email])
+    if @user
+      session[:user_id] = @user.id
+      redirect('/')
+    else
+      erb :error
+    end
+  end
 
+  get  '/logout' do
+    session[:user_id] =  nil
+    redirect('/login')
+  end
+  get '/users' do
+    @logged_in_user = User.find(session[:user_id])
+    @users = User.all
+    erb :users
+  end
+
+  post '/users' do
+    puts params
+    new_user = User.new(:username => params[:username], :email => params[:email], :profile_pic => params[:profile_pic], :age => params[:age])
+    new_user.save
+    redirect ('/user')
+  end
 end
